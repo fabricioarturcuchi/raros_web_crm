@@ -1,18 +1,24 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
     <title>RAROS CAPITAL - CRM de Leads</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!-- Bootstrap 5 CDN -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- Bootstrap 5 CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
     <!-- Bootstrap Icons -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
+      rel="stylesheet"
+    />
     <style>
         body {
             background-color: #0d0d0d;
             color: white;
-            font-family: 'Segoe UI', sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         .logo {
@@ -72,98 +78,215 @@
 </head>
 <body>
     <div class="container-fluid header-bar d-flex justify-content-between align-items-center">
-        <img src="https://i.postimg.cc/wMPWky1K/Sem-t-tulo-removebg-preview.png" alt="RAROS CAPITAL Logo" class="logo">
+        <img src="https://i.postimg.cc/wMPWky1K/Sem-t-tulo-removebg-preview.png" alt="RAROS CAPITAL Logo" class="logo" />
         <span class="text-end text-white h5">CRM de Leads</span>
     </div>
 
     <div class="container mt-4">
+
+        <!-- Flash messages Flask -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            <div class="container mt-3">
+              {% for category, message in messages %}
+                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                  {{ message }}
+                  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+              {% endfor %}
+            </div>
+          {% endif %}
+        {% endwith %}
+
         <div class="text-center motivational">
             "Grandes conquistas começam com grandes conexões. Vender é entender, escutar e transformar sonhos em realidade."
         </div>
 
         <form method="POST" action="/" class="card">
-            <div class="row">
-                <div class="col-md-6 mb-3">
-                    <label for="nome_razao">Nome ou Razão Social</label>
-                    <input type="text" name="nome_razao" class="form-control" required>
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label for="nome_razao" class="form-label">Nome ou Razão Social</label>
+                    <input type="text" name="nome_razao" id="nome_razao" class="form-control" required />
                 </div>
-                <div class="col-md-6 mb-3">
-                    <label for="tipo_doc">Tipo de Documento</label>
-                    <select name="tipo_doc" class="form-control" required>
+                <div class="col-md-6">
+                    <label for="tipo_doc" class="form-label">Tipo de Documento</label>
+                    <select name="tipo_doc" id="tipo_doc" class="form-select" required>
                         <option value="">Selecione</option>
                         <option value="CPF">CPF</option>
                         <option value="CNPJ">CNPJ</option>
                     </select>
                 </div>
-                <div class="col-md-6 mb-3">
-                    <label for="documento">CPF/CNPJ</label>
-                    <input type="text" name="documento" class="form-control" required>
+                <div class="col-md-6">
+                    <label for="documento" class="form-label">CPF/CNPJ</label>
+                    <input type="text" name="documento" id="documento" class="form-control" required />
                 </div>
-                <div class="col-md-6 mb-3">
-                    <label for="telefone">WhatsApp</label>
-                    <input type="text" name="telefone" class="form-control" required>
+                <div class="col-md-6">
+                    <label for="telefone" class="form-label">WhatsApp</label>
+                    <input type="text" name="telefone" id="telefone" class="form-control" required />
                 </div>
-                <div class="col-md-6 mb-3">
-                    <label for="email">E-mail</label>
-                    <input type="email" name="email" class="form-control">
+                <div class="col-md-6">
+                    <label for="email" class="form-label">E-mail</label>
+                    <input type="email" name="email" id="email" class="form-control" />
                 </div>
-                <div class="col-md-6 mb-3">
-                    <label for="cep">CEP</label>
-                    <input type="text" name="cep" class="form-control" required>
+                <div class="col-md-6">
+                    <label for="cep" class="form-label">CEP</label>
+                    <input type="text" name="cep" id="cep" class="form-control" required />
                 </div>
-                <div class="col-md-6 mb-3">
-                    <label for="rua">Rua</label>
-                    <input type="text" name="rua" class="form-control">
+                <div class="col-md-6">
+                    <label for="rua" class="form-label">Rua</label>
+                    <input type="text" name="rua" id="rua" class="form-control" />
                 </div>
-                <div class="col-md-3 mb-3">
-                    <label for="numero">Número</label>
-                    <input type="text" name="numero" class="form-control">
+                <div class="col-md-3">
+                    <label for="numero" class="form-label">Número</label>
+                    <input type="text" name="numero" id="numero" class="form-control" />
                 </div>
-                <div class="col-md-3 mb-3">
-                    <label for="bairro">Bairro</label>
-                    <input type="text" name="bairro" class="form-control">
+                <div class="col-md-3">
+                    <label for="bairro" class="form-label">Bairro</label>
+                    <input type="text" name="bairro" id="bairro" class="form-control" />
                 </div>
-                <div class="col-md-6 mb-3">
-                    <label for="cidade">Cidade</label>
-                    <input type="text" name="cidade" class="form-control">
+                <div class="col-md-6">
+                    <label for="cidade" class="form-label">Cidade</label>
+                    <input type="text" name="cidade" id="cidade" class="form-control" />
                 </div>
-                <div class="col-md-6 mb-3">
-                    <label for="bem">Bem Desejado</label>
-                    <select name="bem" class="form-control" required>
+                <div class="col-md-6">
+                    <label for="bem" class="form-label">Bem Desejado</label>
+                    <select name="bem" id="bem" class="form-select" required>
                         <option value="">Selecione</option>
                         <option value="Automóvel">Automóvel</option>
                         <option value="Imóvel">Imóvel</option>
                     </select>
                 </div>
-                <div class="col-md-6 mb-3">
-                    <label for="valor">Valor do Bem</label>
-                    <input type="number" name="valor" class="form-control" required>
+                <div class="col-md-6">
+                    <label for="valor" class="form-label">Valor do Bem (R$)</label>
+                    <input type="number" step="0.01" min="0" name="valor" id="valor" class="form-control" required />
                 </div>
-                <div class="col-md-6 mb-3">
-                    <label for="parcela">Valor da Parcela</label>
-                    <input type="text" name="parcela" class="form-control" readonly>
+                <div class="col-md-6">
+                    <label for="parcela" class="form-label">Valor da Parcela (R$)</label>
+                    <input type="text" name="parcela" id="parcela" class="form-control" readonly />
                 </div>
-                <div class="col-md-6 mb-3">
-                    <label for="status">Status do Lead</label>
-                    <select name="status" class="form-control" required>
+                <div class="col-md-6">
+                    <label for="status" class="form-label">Status do Lead</label>
+                    <select name="status" id="status" class="form-select" required>
                         <option value="Novo">Novo</option>
                         <option value="Em Contato">Em Contato</option>
                         <option value="Convertido">Convertido</option>
                         <option value="Perdido">Perdido</option>
                     </select>
                 </div>
-                <div class="col-md-6 mb-3">
-                    <label for="origem">Origem do Lead</label>
-                    <input type="text" name="origem" class="form-control">
+                <div class="col-md-6">
+                    <label for="origem" class="form-label">Origem do Lead</label>
+                    <input type="text" name="origem" id="origem" class="form-control" />
                 </div>
             </div>
-            <div class="text-center">
-                <button type="submit" class="btn btn-warning me-3"><i class="bi bi-save"></i> Salvar Lead</button>
-                <a href="/" class="btn btn-primary"><i class="bi bi-arrow-repeat"></i> Limpar</a>
+
+            <div class="text-center mt-4">
+                <button type="submit" class="btn btn-warning me-3">
+                    <i class="bi bi-save"></i> Salvar Lead
+                </button>
+                <button type="reset" class="btn btn-primary">
+                    <i class="bi bi-arrow-repeat"></i> Limpar
+                </button>
             </div>
         </form>
     </div>
 
+    <!-- Bootstrap JS Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+      // Atualiza valor da parcela automaticamente no front (simples)
+      const bemField = document.getElementById('bem');
+      const valorField = document.getElementById('valor');
+      const parcelaField = document.getElementById('parcela');
+
+      function calculaParcela() {
+          const bem = bemField.value;
+          let valor = parseFloat(valorField.value);
+          if (isNaN(valor)) {
+            parcelaField.value = '';
+            return;
+          }
+
+          let parcela = 0;
+          if (bem === 'Automóvel' && valor >= 65000) {
+              parcela = ((valor * 1.16) / 84).toFixed(2);
+          } else if (bem === 'Imóvel' && valor >= 200000) {
+              parcela = ((valor * 1.22) / 220).toFixed(2);
+          } else {
+              parcela = '';
+          }
+
+          parcelaField.value = parcela ? `R$ ${parcela}` : '';
+      }
+
+      bemField.addEventListener('change', calculaParcela);
+      valorField.addEventListener('input', calculaParcela);
+
+      // Máscara simples para CPF/CNPJ
+      const tipoDocField = document.getElementById('tipo_doc');
+      const documentoField = document.getElementById('documento');
+
+      function mascaraDocumento() {
+          let val = documentoField.value.replace(/\D/g, '');
+          if (tipoDocField.value === 'CPF') {
+              val = val.slice(0, 11);
+              val = val.replace(/(\d{3})(\d)/, '$1.$2');
+              val = val.replace(/(\d{3})(\d)/, '$1.$2');
+              val = val.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+          } else if (tipoDocField.value === 'CNPJ') {
+              val = val.slice(0, 14);
+              val = val.replace(/^(\d{2})(\d)/, '$1.$2');
+              val = val.replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3');
+              val = val.replace(/\.(\d{3})(\d)/, '.$1/$2');
+              val = val.replace(/(\d{4})(\d)/, '$1-$2');
+          }
+          documentoField.value = val;
+      }
+
+      tipoDocField.addEventListener('change', () => {
+          documentoField.value = '';
+          documentoField.placeholder = tipoDocField.value === 'CPF' ? '000.000.000-00' : '00.000.000/0000-00';
+      });
+
+      documentoField.addEventListener('input', mascaraDocumento);
+
+      // Máscara para telefone WhatsApp (99) 99999-9999
+      const telefoneField = document.getElementById('telefone');
+      telefoneField.addEventListener('input', () => {
+          let val = telefoneField.value.replace(/\D/g, '');
+          if (val.length > 11) val = val.slice(0, 11);
+          val = val.replace(/^(\d{2})(\d)/g, '($1) $2');
+          val = val.replace(/(\d{5})(\d{4})$/, '$1-$2');
+          telefoneField.value = val;
+      });
+
+      // Máscara para CEP 00000-000
+      const cepField = document.getElementById('cep');
+      cepField.addEventListener('input', () => {
+          let val = cepField.value.replace(/\D/g, '');
+          if (val.length > 8) val = val.slice(0, 8);
+          val = val.replace(/(\d{5})(\d)/, '$1-$2');
+          cepField.value = val;
+      });
+
+      // Busca endereço pelo CEP via API viacep
+      cepField.addEventListener('blur', () => {
+          const cep = cepField.value.replace(/\D/g, '');
+          if (cep.length === 8) {
+              fetch(`https://viacep.com.br/ws/${cep}/json/`)
+                .then(response => response.json())
+                .then(data => {
+                    if (!data.erro) {
+                        document.getElementById('rua').value = data.logradouro || '';
+                        document.getElementById('bairro').value = data.bairro || '';
+                        document.getElementById('cidade').value = data.localidade || '';
+                    }
+                })
+                .catch(() => {
+                    // Erro ao buscar CEP, pode avisar aqui se quiser
+                });
+          }
+      });
+    </script>
 </body>
 </html>

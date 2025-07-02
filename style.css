@@ -1,0 +1,41 @@
+body {
+    font-family: Arial, sans-serif;
+    background: #f2f7fb;
+}
+
+.container {
+    max-width: 600px;
+    margin: 30px auto;
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
+}
+
+h1 {
+    text-align: center;
+    color: #003366;
+}
+
+input, select, button {
+    width: 100%;
+    padding: 8px;
+    margin-top: 6px;
+    margin-bottom: 16px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+}
+
+button {
+    background: #003366;
+    color: white;
+    border: none;
+}
+
+.alert.success {
+    color: green;
+}
+
+.alert.danger {
+    color: red;
+}

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>RAROS CAPITAL - CRM</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <script src="/static/script.js" defer></script>
+</head>
+<body>
+    <div class="container">
+        <h1>CRM - RAROS CAPITAL</h1>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% for category, message in messages %}
+            <div class="alert {{ category }}">{{ message }}</div>
+          {% endfor %}
+        {% endwith %}
+        <form method="POST">
+            <label>Nome/Razão Social</label>
+            <input type="text" name="nome" required>
+
+            <label>Tipo de Documento</label>
+            <select name="tipo_doc" id="tipo_doc" onchange="mascaraDocumento()">
+                <option value="CPF">CPF</option>
+                <option value="CNPJ">CNPJ</option>
+            </select>
+
+            <label>CPF/CNPJ</label>
+            <input type="text" name="documento" id="documento" required>
+
+            <label>Telefone</label>
+            <input type="text" name="telefone" id="telefone" required>
+
+            <label>E-mail</label>
+            <input type="email" name="email" required>
+
+            <label>CEP</label>
+            <input type="text" name="cep" id="cep" required onblur="buscarEndereco()">
+
+            <label>Rua</label>
+            <input type="text" name="rua" id="rua" required>
+
+            <label>Número</label>
+            <input type="text" name="numero" required>
+
+            <label>Bairro</label>
+            <input type="text" name="bairro" id="bairro" required>
+
+            <label>Cidade</label>
+            <input type="text" name="cidade" id="cidade" required>
+
+            <label>Bem Desejado</label>
+            <select name="bem" id="bem" onchange="calcularParcela()" required>
+                <option value="Automóvel">Automóvel</option>
+                <option value="Imóvel">Imóvel</option>
+            </select>
+
+            <label>Valor do Bem (R$)</label>
+            <input type="number" name="valor" id="valor" required oninput="calcularParcela()">
+
+            <label>Parcela Estimada (R$)</label>
+            <input type="text" name="parcela" id="parcela" readonly>
+
+            <label>Status</label>
+            <select name="status">
+                <option>Novo</option>
+                <option>Em contato</option>
+                <option>Qualificado</option>
+                <option>Fechado</option>
+                <option>Perdido</option>
+            </select>
+
+            <label>Origem do Lead</label>
+            <input type="text" name="origem">
+
+            <button type="submit">Salvar Lead</button>
+        </form>
+    </div>
+</body>
+</html>

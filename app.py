@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, flash, send_file
+from flask import Flask, render_template, request, redirect, flash, send_file, url_for
 import os
 import openpyxl
 from reportlab.lib.pagesizes import letter
@@ -6,9 +6,8 @@ from reportlab.pdfgen import canvas
 import io
 
 app = Flask(__name__)
-app.secret_key = os.environ.get("FLASK_SECRET_KEY", "segredo")  # melhor usar variável de ambiente
+app.secret_key = os.environ.get("FLASK_SECRET_KEY", "segredo")  # ideal usar variável de ambiente
 
-# Função para criar arquivo Excel caso não exista
 def criar_arquivo_excel(caminho):
     wb = openpyxl.Workbook()
     ws = wb.active
@@ -78,7 +77,6 @@ def index():
             return redirect("/")
     return render_template("index.html")
 
-
 @app.route("/leads")
 def visualizar_leads():
     leads = []
@@ -117,7 +115,6 @@ def visualizar_leads():
 
     return render_template("leads.html", leads=leads)
 
-
 @app.route("/exportar-pdf")
 def exportar_pdf():
     arquivo = "leads.xlsx"
@@ -145,7 +142,6 @@ def exportar_pdf():
                 c.showPage()
                 y = height - 40
                 c.setFont("Helvetica", 10)
-            # Seleciona os campos principais para exibir no PDF
             dados_pdf = [
                 str(row[0] or ""),    # Nome/Razão Social
                 str(row[3] or ""),    # Telefone
@@ -166,7 +162,6 @@ def exportar_pdf():
     else:
         flash("Arquivo de leads não encontrado.", "danger")
         return redirect("/leads")
-
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))

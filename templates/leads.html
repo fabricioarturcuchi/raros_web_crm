@@ -13,6 +13,7 @@
     }
     .container {
       margin-top: 30px;
+      max-width: 95%;
     }
     .table {
       background-color: #1a1a1a;
@@ -21,9 +22,13 @@
     .table th {
       background-color: gold;
       color: black;
+      white-space: nowrap;
     }
     .back-btn {
       margin-bottom: 20px;
+    }
+    table td {
+      white-space: nowrap;
     }
   </style>
 </head>
@@ -53,19 +58,19 @@
             <th>Bairro</th>
             <th>Cidade</th>
             <th>Bem</th>
-            <th>Valor</th>
-            <th>Parcela</th>
+            <th>Valor (R$)</th>
+            <th>Parcela (R$)</th>
             <th>Status</th>
             <th>Origem</th>
           </tr>
         </thead>
         <tbody>
           {% for lead in leads %}
-            <tr>
-              {% for item in lead %}
-                <td>{{ item }}</td>
-              {% endfor %}
-            </tr>
+          <tr>
+            {% for item in lead %}
+            <td>{{ item }}</td>
+            {% endfor %}
+          </tr>
           {% endfor %}
         </tbody>
       </table>

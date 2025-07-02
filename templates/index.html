@@ -2,78 +2,168 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>RAROS CAPITAL - CRM</title>
-    <link rel="stylesheet" href="/static/style.css">
-    <script src="/static/script.js" defer></script>
+    <title>RAROS CAPITAL - CRM de Leads</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Bootstrap 5 CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #0d0d0d;
+            color: white;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .logo {
+            width: 160px;
+        }
+
+        .header-bar {
+            background: linear-gradient(90deg, #000, #1a1a1a);
+            padding: 15px;
+            border-bottom: 2px solid gold;
+        }
+
+        .card {
+            background-color: #1a1a1a;
+            border: 1px solid gold;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        label {
+            font-weight: bold;
+            color: #ffffff;
+        }
+
+        .form-control {
+            background-color: #f8f9fa;
+            border: 1px solid #ced4da;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+
+        .btn-warning {
+            background-color: gold;
+            color: black;
+            border: none;
+        }
+
+        .btn-warning:hover {
+            background-color: #e6c200;
+        }
+
+        .motivational {
+            color: gold;
+            font-style: italic;
+            font-size: 1.2rem;
+            margin: 10px 0 30px;
+        }
+    </style>
 </head>
 <body>
-    <div class="container">
-        <h1>CRM - RAROS CAPITAL</h1>
-        {% with messages = get_flashed_messages(with_categories=true) %}
-          {% for category, message in messages %}
-            <div class="alert {{ category }}">{{ message }}</div>
-          {% endfor %}
-        {% endwith %}
-        <form method="POST">
-            <label>Nome/Razão Social</label>
-            <input type="text" name="nome" required>
+    <div class="container-fluid header-bar d-flex justify-content-between align-items-center">
+        <img src="https://i.postimg.cc/wMPWky1K/Sem-t-tulo-removebg-preview.png" alt="RAROS CAPITAL Logo" class="logo">
+        <span class="text-end text-white h5">CRM de Leads</span>
+    </div>
 
-            <label>Tipo de Documento</label>
-            <select name="tipo_doc" id="tipo_doc" onchange="mascaraDocumento()">
-                <option value="CPF">CPF</option>
-                <option value="CNPJ">CNPJ</option>
-            </select>
+    <div class="container mt-4">
+        <div class="text-center motivational">
+            "Grandes conquistas começam com grandes conexões. Vender é entender, escutar e transformar sonhos em realidade."
+        </div>
 
-            <label>CPF/CNPJ</label>
-            <input type="text" name="documento" id="documento" required>
-
-            <label>Telefone</label>
-            <input type="text" name="telefone" id="telefone" required>
-
-            <label>E-mail</label>
-            <input type="email" name="email" required>
-
-            <label>CEP</label>
-            <input type="text" name="cep" id="cep" required onblur="buscarEndereco()">
-
-            <label>Rua</label>
-            <input type="text" name="rua" id="rua" required>
-
-            <label>Número</label>
-            <input type="text" name="numero" required>
-
-            <label>Bairro</label>
-            <input type="text" name="bairro" id="bairro" required>
-
-            <label>Cidade</label>
-            <input type="text" name="cidade" id="cidade" required>
-
-            <label>Bem Desejado</label>
-            <select name="bem" id="bem" onchange="calcularParcela()" required>
-                <option value="Automóvel">Automóvel</option>
-                <option value="Imóvel">Imóvel</option>
-            </select>
-
-            <label>Valor do Bem (R$)</label>
-            <input type="number" name="valor" id="valor" required oninput="calcularParcela()">
-
-            <label>Parcela Estimada (R$)</label>
-            <input type="text" name="parcela" id="parcela" readonly>
-
-            <label>Status</label>
-            <select name="status">
-                <option>Novo</option>
-                <option>Em contato</option>
-                <option>Qualificado</option>
-                <option>Fechado</option>
-                <option>Perdido</option>
-            </select>
-
-            <label>Origem do Lead</label>
-            <input type="text" name="origem">
-
-            <button type="submit">Salvar Lead</button>
+        <form method="POST" action="/" class="card">
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="nome_razao">Nome ou Razão Social</label>
+                    <input type="text" name="nome_razao" class="form-control" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="tipo_doc">Tipo de Documento</label>
+                    <select name="tipo_doc" class="form-control" required>
+                        <option value="">Selecione</option>
+                        <option value="CPF">CPF</option>
+                        <option value="CNPJ">CNPJ</option>
+                    </select>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="documento">CPF/CNPJ</label>
+                    <input type="text" name="documento" class="form-control" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="telefone">WhatsApp</label>
+                    <input type="text" name="telefone" class="form-control" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="email">E-mail</label>
+                    <input type="email" name="email" class="form-control">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="cep">CEP</label>
+                    <input type="text" name="cep" class="form-control" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="rua">Rua</label>
+                    <input type="text" name="rua" class="form-control">
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label for="numero">Número</label>
+                    <input type="text" name="numero" class="form-control">
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label for="bairro">Bairro</label>
+                    <input type="text" name="bairro" class="form-control">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="cidade">Cidade</label>
+                    <input type="text" name="cidade" class="form-control">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="bem">Bem Desejado</label>
+                    <select name="bem" class="form-control" required>
+                        <option value="">Selecione</option>
+                        <option value="Automóvel">Automóvel</option>
+                        <option value="Imóvel">Imóvel</option>
+                    </select>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="valor">Valor do Bem</label>
+                    <input type="number" name="valor" class="form-control" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="parcela">Valor da Parcela</label>
+                    <input type="text" name="parcela" class="form-control" readonly>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="status">Status do Lead</label>
+                    <select name="status" class="form-control" required>
+                        <option value="Novo">Novo</option>
+                        <option value="Em Contato">Em Contato</option>
+                        <option value="Convertido">Convertido</option>
+                        <option value="Perdido">Perdido</option>
+                    </select>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="origem">Origem do Lead</label>
+                    <input type="text" name="origem" class="form-control">
+                </div>
+            </div>
+            <div class="text-center">
+                <button type="submit" class="btn btn-warning me-3"><i class="bi bi-save"></i> Salvar Lead</button>
+                <a href="/" class="btn btn-primary"><i class="bi bi-arrow-repeat"></i> Limpar</a>
+            </div>
         </form>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

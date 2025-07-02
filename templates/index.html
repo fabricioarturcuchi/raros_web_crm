@@ -1,131 +1,227 @@
-from flask import Flask, render_template, request, redirect, flash, send_file
-import os
-import openpyxl
-from reportlab.lib.pagesizes import letter
-from reportlab.pdfgen import canvas
-import io
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <title>RAROS CAPITAL - Cadastro de Leads</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+  <style>
+    body {
+      background-color: #0d0d0d;
+      color: white;
+    }
+    .container {
+      max-width: 900px;
+      margin-top: 30px;
+      padding: 20px;
+      background: linear-gradient(145deg, #000000, #1a1a1a);
+      border-radius: 10px;
+      box-shadow: 0 0 10px gold;
+    }
+    label {
+      font-weight: 600;
+    }
+    .form-control, .form-select {
+      background-color: #121212;
+      color: white;
+      border: 1px solid gold;
+    }
+    .form-control::placeholder {
+      color: #ccc;
+    }
+    .btn-primary {
+      background-color: gold;
+      border: none;
+      color: black;
+      font-weight: 700;
+    }
+    .btn-primary:hover {
+      background-color: #b38f00;
+      color: white;
+    }
+    .btn-outline-warning {
+      border: 1px solid gold;
+      color: gold;
+    }
+    .btn-outline-warning:hover {
+      background-color: gold;
+      color: black;
+    }
+    header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    header img {
+      max-height: 60px;
+      margin-bottom: 10px;
+    }
+    footer {
+      text-align: center;
+      margin-top: 30px;
+      font-style: italic;
+      color: #aaa;
+    }
+    .flash-message {
+      margin-bottom: 15px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <img src="https://i.postimg.cc/wMPWky1K/Sem-t-tulo-removebg-preview.png" alt="RAROS CAPITAL Logo" />
+      <h1>RAROS CAPITAL</h1>
+      <p><em>"Transformando oportunidades em vendas de sucesso!"</em></p>
+    </header>
 
-app = Flask(__name__)
-app.secret_key = os.environ.get("FLASK_SECRET_KEY", "segredo")
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }} flash-message" role="alert">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
 
-def criar_arquivo_excel(caminho):
-    wb = openpyxl.Workbook()
-    ws = wb.active
-    ws.title = "Leads"
-    ws.append([
-        "Nome/Razão Social", "Tipo Documento", "Documento", "Telefone", "E-mail",
-        "CEP", "Rua", "Número", "Bairro", "Cidade", "Bem", "Valor", "Parcela",
-        "Status", "Origem"
-    ])
-    wb.save(caminho)
+    <form method="POST" novalidate>
+      <div class="mb-3">
+        <label for="nome_razao" class="form-label">Nome ou Razão Social *</label>
+        <input type="text" id="nome_razao" name="nome_razao" class="form-control" required />
+      </div>
 
-@app.route("/", methods=["GET", "POST"])
-def index():
-    if request.method == "POST":
-        try:
-            nome_razao = request.form.get("nome_razao", "").strip()
-            tipo_doc = request.form.get("tipo_doc", "").strip()
-            documento = request.form.get("documento", "").strip()
-            telefone = request.form.get("telefone", "").strip()
-            email = request.form.get("email", "").strip()
-            cep = request.form.get("cep", "").strip()
-            rua = request.form.get("rua", "").strip()
-            numero = request.form.get("numero", "").strip()
-            bairro = request.form.get("bairro", "").strip()
-            cidade = request.form.get("cidade", "").strip()
-            bem = request.form.get("bem", "").strip()
-            valor = float(request.form.get("valor", "0").replace(",", ".").strip())
-            status = request.form.get("status", "").strip()
-            origem = request.form.get("origem", "").strip()
+      <div class="mb-3">
+        <label for="tipo_doc" class="form-label">Tipo Documento *</label>
+        <select id="tipo_doc" name="tipo_doc" class="form-select" required>
+          <option value="CPF">CPF</option>
+          <option value="CNPJ">CNPJ</option>
+        </select>
+      </div>
 
-            if not all([nome_razao, tipo_doc, documento, telefone, cep, bem]) or valor <= 0:
-                flash("Complete todos os campos obrigatórios corretamente.", "danger")
-                return redirect("/")
+      <div class="mb-3">
+        <label for="documento" class="form-label">CPF ou CNPJ *</label>
+        <input type="text" id="documento" name="documento" class="form-control" required />
+      </div>
 
-            if bem == "Automóvel" and valor < 65000:
-                flash("Valor mínimo para Automóvel é R$ 65.000,00", "danger")
-                return redirect("/")
-            if bem == "Imóvel" and valor < 200000:
-                flash("Valor mínimo para Imóvel é R$ 200.000,00", "danger")
-                return redirect("/")
+      <div class="mb-3">
+        <label for="telefone" class="form-label">Telefone (WhatsApp) *</label>
+        <input type="text" id="telefone" name="telefone" class="form-control" required />
+      </div>
 
-            parcela = {
-                "Automóvel": round((valor * 1.16) / 84, 2),
-                "Imóvel": round((valor * 1.22) / 220, 2)
-            }.get(bem, 0)
+      <div class="mb-3">
+        <label for="email" class="form-label">E-mail</label>
+        <input type="email" id="email" name="email" class="form-control" />
+      </div>
 
-            arquivo = "leads.xlsx"
-            if not os.path.exists(arquivo):
-                criar_arquivo_excel(arquivo)
+      <div class="mb-3">
+        <label for="cep" class="form-label">CEP *</label>
+        <input type="text" id="cep" name="cep" class="form-control" required />
+      </div>
 
-            wb = openpyxl.load_workbook(arquivo)
-            ws = wb["Leads"]
-            ws.append([
-                nome_razao, tipo_doc, documento, telefone, email, cep, rua,
-                numero, bairro, cidade, bem, valor, parcela, status, origem
-            ])
-            wb.save(arquivo)
+      <div class="mb-3">
+        <label for="rua" class="form-label">Rua</label>
+        <input type="text" id="rua" name="rua" class="form-control" readonly />
+      </div>
 
-            flash(f"Lead salvo com sucesso! Parcela: R$ {parcela:.2f}", "success")
-            return redirect("/")
-        except Exception as e:
-            flash(f"Erro ao processar dados: {e}", "danger")
-            return redirect("/")
-    return render_template("index.html")
+      <div class="mb-3">
+        <label for="numero" class="form-label">Número</label>
+        <input type="text" id="numero" name="numero" class="form-control" />
+      </div>
 
-@app.route("/leads")
-def visualizar_leads():
-    leads = []
-    arquivo = "leads.xlsx"
-    filtros = {k: request.args.get(k, "").lower().strip() for k in ["nome", "telefone", "email", "cidade", "status"]}
+      <div class="mb-3">
+        <label for="bairro" class="form-label">Bairro</label>
+        <input type="text" id="bairro" name="bairro" class="form-control" readonly />
+      </div>
 
-    if os.path.exists(arquivo):
-        wb = openpyxl.load_workbook(arquivo)
-        if "Leads" in wb.sheetnames:
-            ws = wb["Leads"]
-            for row in ws.iter_rows(min_row=2, values_only=True):
-                if not any(row): continue
-                nome, telefone, email, cidade, status = [str(row[i] or "").lower() for i in [0,3,4,9,13]]
-                if all(not filtros[key] or filtros[key] in locals()[key] for key in filtros):
-                    leads.append(row)
+      <div class="mb-3">
+        <label for="cidade" class="form-label">Cidade</label>
+        <input type="text" id="cidade" name="cidade" class="form-control" readonly />
+      </div>
 
-    return render_template("leads.html", leads=leads)
+      <div class="mb-3">
+        <label for="bem" class="form-label">Bem Desejado *</label>
+        <select id="bem" name="bem" class="form-select" required>
+          <option disabled selected>Selecione</option>
+          <option value="Automóvel">Automóvel</option>
+          <option value="Imóvel">Imóvel</option>
+        </select>
+      </div>
 
-@app.route("/exportar-pdf")
-def exportar_pdf():
-    arquivo = "leads.xlsx"
-    buffer = io.BytesIO()
-    c = canvas.Canvas(buffer, pagesize=letter)
-    y = letter[1] - 40
-    c.setFont("Helvetica-Bold", 14)
-    c.drawString(40, y, "Leads Exportados - Raros Capital")
-    y -= 30
-    c.setFont("Helvetica", 10)
-    headers = ["Nome", "Telefone", "E-mail", "Cidade", "Status", "Origem", "Valor", "Parcela"]
-    c.drawString(40, y, " | ".join(headers))
-    y -= 20
+      <div class="mb-3">
+        <label for="valor" class="form-label">Valor do Bem (R$) *</label>
+        <input type="text" id="valor" name="valor" class="form-control" required />
+      </div>
 
-    if os.path.exists(arquivo):
-        wb = openpyxl.load_workbook(arquivo)
-        if "Leads" in wb.sheetnames:
-            ws = wb["Leads"]
-            for row in ws.iter_rows(min_row=2, values_only=True):
-                if y < 50:
-                    c.showPage()
-                    y = letter[1] - 40
-                    c.setFont("Helvetica", 10)
-                dados = [
-                    str(row[0] or ""), str(row[3] or ""), str(row[4] or ""),
-                    str(row[9] or ""), str(row[13] or ""), str(row[14] or ""),
-                    f"R$ {row[11]:,.2f}", f"R$ {row[12]:,.2f}"
-                ]
-                c.drawString(40, y, " | ".join(dados))
-                y -= 15
+      <div class="mb-3">
+        <label for="parcela" class="form-label">Parcela Calculada (R$)</label>
+        <input type="text" id="parcela" name="parcela" class="form-control" readonly />
+      </div>
 
-    c.save()
-    buffer.seek(0)
-    return send_file(buffer, as_attachment=True, download_name="leads.pdf", mimetype="application/pdf")
+      <div class="mb-3">
+        <label for="status" class="form-label">Status do Lead</label>
+        <select id="status" name="status" class="form-select">
+          <option value="Novo">Novo</option>
+          <option value="Atendimento">Atendimento</option>
+          <option value="Ganho">Ganho</option>
+          <option value="Perdido">Perdido</option>
+          <option value="Outros">Outros</option>
+        </select>
+      </div>
 
-if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port)
+      <div class="mb-3">
+        <label for="origem" class="form-label">Origem do Lead</label>
+        <select id="origem" name="origem" class="form-select">
+          <option value="Instagram">Instagram</option>
+          <option value="Facebook">Facebook</option>
+          <option value="Indicação">Indicação</option>
+          <option value="Outros">Outros</option>
+        </select>
+      </div>
+
+      <div class="d-flex justify-content-between">
+        <button type="submit" class="btn btn-primary">Salvar Lead</button>
+        <a href="/leads" class="btn btn-outline-warning">Visualizar Leads</a>
+      </div>
+    </form>
+  </div>
+
+  <script>
+    const bemField = document.getElementById('bem');
+    const valorField = document.getElementById('valor');
+    const parcelaField = document.getElementById('parcela');
+
+    function calculaParcela() {
+      let valor = parseFloat(valorField.value.replace(",", "."));
+      if (isNaN(valor)) {
+        parcelaField.value = '';
+        return;
+      }
+      let bem = bemField.value;
+      let parcela = 0;
+      if (bem === 'Automóvel' && valor >= 65000) {
+        parcela = (valor * 1.16) / 84;
+      } else if (bem === 'Imóvel' && valor >= 200000) {
+        parcela = (valor * 1.22) / 220;
+      }
+      parcelaField.value = parcela ? parcela.toFixed(2) : '';
+    }
+
+    bemField.addEventListener('change', calculaParcela);
+    valorField.addEventListener('input', calculaParcela);
+
+    // Busca CEP com ViaCEP
+    document.getElementById('cep').addEventListener('blur', () => {
+      const cep = document.getElementById('cep').value.replace(/\D/g, '');
+      if (cep.length !== 8) return;
+      fetch(`https://viacep.com.br/ws/${cep}/json/`)
+        .then(resp => resp.json())
+        .then(data => {
+          if (!data.erro) {
+            document.getElementById('rua').value = data.logradouro || '';
+            document.getElementById('bairro').value = data.bairro || '';
+            document.getElementById('cidade').value = data.localidade || '';
+          }
+        });
+    });
+  </script>
+</body>
+</html>

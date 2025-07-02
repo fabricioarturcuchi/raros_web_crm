@@ -19,7 +19,16 @@ def salvar_lead_excel(dados):
         wb.save(arquivo)
 
     wb = openpyxl.load_workbook(arquivo)
-    ws = wb["Leads"]
+    if "Leads" not in wb.sheetnames:
+        ws = wb.create_sheet("Leads")
+        ws.append([
+            "Nome/Razão Social", "Tipo Documento", "Documento", "Telefone", "E-mail",
+            "CEP", "Rua", "Número", "Bairro", "Cidade", "Bem", "Valor", "Parcela",
+            "Status", "Origem"
+        ])
+    else:
+        ws = wb["Leads"]
+
     ws.append(dados)
     wb.save(arquivo)
 
@@ -43,12 +52,12 @@ def index():
             status = request.form.get("status")
             origem = request.form.get("origem")
 
-            # Validações simples
+            # Validações básicas
             if not nome_razao or not tipo_doc or not documento or not telefone or not cep or not bem or valor <= 0:
                 flash("Preencha todos os campos obrigatórios corretamente.", "danger")
                 return redirect("/")
 
-            # Cálculo parcela
+            # Cálculo da parcela
             if bem == "Automóvel":
                 if valor < 65000:
                     flash("Valor mínimo para Automóvel é R$ 65.000,00", "danger")
@@ -74,29 +83,17 @@ def index():
             return redirect("/")
     return render_template("index.html")
 
-
 @app.route("/leads")
 def visualizar_leads():
     leads = []
     arquivo = "leads.xlsx"
-
-    if not os.path.exists(arquivo):
-        flash("Nenhum lead cadastrado ainda. Cadastre um para visualizar.", "warning")
-        return redirect("/")
-
-    try:
+    if os.path.exists(arquivo):
         wb = openpyxl.load_workbook(arquivo)
-        if "Leads" not in wb.sheetnames:
-            flash("A aba 'Leads' não encontrada no Excel.", "danger")
-            return redirect("/")
-        ws = wb["Leads"]
-        for row in ws.iter_rows(min_row=2, values_only=True):
-            leads.append(row)
-        return render_template("leads.html", leads=leads)
-    except Exception as e:
-        flash(f"Erro ao carregar os leads: {e}", "danger")
-        return redirect("/")
-
+        if "Leads" in wb.sheetnames:
+            ws = wb["Leads"]
+            for row in ws.iter_rows(min_row=2, values_only=True):
+                leads.append(row)
+    return render_template("leads.html", leads=leads)
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))

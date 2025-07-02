@@ -6,27 +6,46 @@ from reportlab.pdfgen import canvas
 import io
 
 app = Flask(__name__)
-app.secret_key = "segredo"
+app.secret_key = os.environ.get("FLASK_SECRET_KEY", "segredo")  # melhor usar variável de ambiente
+
+# Função para criar arquivo Excel caso não exista
+def criar_arquivo_excel(caminho):
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = "Leads"
+    ws.append([
+        "Nome/Razão Social", "Tipo Documento", "Documento", "Telefone", "E-mail",
+        "CEP", "Rua", "Número", "Bairro", "Cidade", "Bem", "Valor", "Parcela",
+        "Status", "Origem"
+    ])
+    wb.save(caminho)
 
 @app.route("/", methods=["GET", "POST"])
 def index():
     if request.method == "POST":
         try:
-            nome_razao = request.form.get("nome_razao")
-            tipo_doc = request.form.get("tipo_doc")
-            documento = request.form.get("documento")
-            telefone = request.form.get("telefone")
-            email = request.form.get("email")
-            cep = request.form.get("cep")
-            rua = request.form.get("rua")
-            numero = request.form.get("numero")
-            bairro = request.form.get("bairro")
-            cidade = request.form.get("cidade")
-            bem = request.form.get("bem")
-            valor = float(request.form.get("valor").replace(",", "."))
-            status = request.form.get("status")
-            origem = request.form.get("origem")
+            nome_razao = request.form.get("nome_razao", "").strip()
+            tipo_doc = request.form.get("tipo_doc", "").strip()
+            documento = request.form.get("documento", "").strip()
+            telefone = request.form.get("telefone", "").strip()
+            email = request.form.get("email", "").strip()
+            cep = request.form.get("cep", "").strip()
+            rua = request.form.get("rua", "").strip()
+            numero = request.form.get("numero", "").strip()
+            bairro = request.form.get("bairro", "").strip()
+            cidade = request.form.get("cidade", "").strip()
+            bem = request.form.get("bem", "").strip()
+            valor_str = request.form.get("valor", "0").replace(",", ".").strip()
+            valor = float(valor_str) if valor_str else 0.0
+            status = request.form.get("status", "").strip()
+            origem = request.form.get("origem", "").strip()
 
+            # Validações básicas
+            if not (nome_razao and tipo_doc and documento and telefone and cep and bem and valor > 0):
+                flash("Preencha todos os campos obrigatórios corretamente.", "danger")
+                return redirect("/")
+
+            # Cálculo da parcela
             if bem == "Automóvel":
                 if valor < 65000:
                     flash("Valor mínimo para Automóvel é R$ 65.000,00", "danger")
@@ -42,15 +61,7 @@ def index():
 
             arquivo = "leads.xlsx"
             if not os.path.exists(arquivo):
-                wb = openpyxl.Workbook()
-                ws = wb.active
-                ws.title = "Leads"
-                ws.append([
-                    "Nome/Razão Social", "Tipo Documento", "Documento", "Telefone", "E-mail",
-                    "CEP", "Rua", "Número", "Bairro", "Cidade", "Bem", "Valor", "Parcela",
-                    "Status", "Origem"
-                ])
-                wb.save(arquivo)
+                criar_arquivo_excel(arquivo)
 
             wb = openpyxl.load_workbook(arquivo)
             ws = wb["Leads"]
@@ -67,10 +78,12 @@ def index():
             return redirect("/")
     return render_template("index.html")
 
+
 @app.route("/leads")
 def visualizar_leads():
     leads = []
     arquivo = "leads.xlsx"
+
     filtros = {
         "nome": request.args.get("nome", "").lower(),
         "telefone": request.args.get("telefone", "").lower(),
@@ -87,11 +100,11 @@ def visualizar_leads():
                 if not any(row):
                     continue
 
-                nome = str(row[0]).lower()
-                telefone = str(row[3]).lower()
-                email = str(row[4]).lower()
-                cidade = str(row[9]).lower()
-                status = str(row[13]).lower()
+                nome = str(row[0] or "").lower()
+                telefone = str(row[3] or "").lower()
+                email = str(row[4] or "").lower()
+                cidade = str(row[9] or "").lower()
+                status = str(row[13] or "").lower()
 
                 if (
                     (not filtros["nome"] or filtros["nome"] in nome) and
@@ -104,6 +117,7 @@ def visualizar_leads():
 
     return render_template("leads.html", leads=leads)
 
+
 @app.route("/exportar-pdf")
 def exportar_pdf():
     arquivo = "leads.xlsx"
@@ -111,7 +125,7 @@ def exportar_pdf():
 
     c = canvas.Canvas(buffer, pagesize=letter)
     width, height = letter
-    c.setFont("Helvetica", 10)
+    c.setFont("Helvetica-Bold", 14)
     y = height - 40
 
     if os.path.exists(arquivo):
@@ -119,14 +133,30 @@ def exportar_pdf():
         ws = wb["Leads"]
 
         c.drawString(40, y, "Leads Exportados - Raros Capital")
+        y -= 30
+        c.setFont("Helvetica", 10)
+
+        headers = ["Nome", "Telefone", "E-mail", "Cidade", "Status", "Origem", "Valor", "Parcela"]
+        c.drawString(40, y, " | ".join(headers))
         y -= 20
 
         for row in ws.iter_rows(min_row=2, values_only=True):
             if y < 50:
                 c.showPage()
-                c.setFont("Helvetica", 10)
                 y = height - 40
-            linha = " | ".join(str(v) if v is not None else "" for v in row[:6])
+                c.setFont("Helvetica", 10)
+            # Seleciona os campos principais para exibir no PDF
+            dados_pdf = [
+                str(row[0] or ""),    # Nome/Razão Social
+                str(row[3] or ""),    # Telefone
+                str(row[4] or ""),    # E-mail
+                str(row[9] or ""),    # Cidade
+                str(row[13] or ""),   # Status
+                str(row[14] or ""),   # Origem
+                f"R$ {row[11]:,.2f}" if row[11] else "R$ 0,00",  # Valor formatado
+                f"R$ {row[12]:,.2f}" if row[12] else "R$ 0,00",  # Parcela formatada
+            ]
+            linha = " | ".join(dados_pdf)
             c.drawString(40, y, linha)
             y -= 15
 
@@ -136,6 +166,7 @@ def exportar_pdf():
     else:
         flash("Arquivo de leads não encontrado.", "danger")
         return redirect("/leads")
+
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))

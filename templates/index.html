@@ -22,7 +22,7 @@
     label {
       font-weight: 600;
     }
-    .form-control, .form-select {
+    .form-control, select {
       background-color: #121212;
       color: white;
       border: 1px solid gold;
@@ -39,14 +39,6 @@
     .btn-primary:hover {
       background-color: #b38f00;
       color: white;
-    }
-    .btn-outline-warning {
-      border: 1px solid gold;
-      color: gold;
-    }
-    .btn-outline-warning:hover {
-      background-color: gold;
-      color: black;
     }
     header {
       text-align: center;
@@ -92,29 +84,29 @@
       <div class="mb-3">
         <label for="tipo_doc" class="form-label">Tipo Documento *</label>
         <select id="tipo_doc" name="tipo_doc" class="form-select" required>
-          <option value="CPF">CPF</option>
+          <option value="CPF" selected>CPF</option>
           <option value="CNPJ">CNPJ</option>
         </select>
       </div>
 
       <div class="mb-3">
         <label for="documento" class="form-label">CPF ou CNPJ *</label>
-        <input type="text" id="documento" name="documento" class="form-control" required />
+        <input type="text" id="documento" name="documento" class="form-control" placeholder="000.000.000-00" required />
       </div>
 
       <div class="mb-3">
         <label for="telefone" class="form-label">Telefone (WhatsApp) *</label>
-        <input type="text" id="telefone" name="telefone" class="form-control" required />
+        <input type="text" id="telefone" name="telefone" class="form-control" placeholder="(00) 00000-0000" required />
       </div>
 
       <div class="mb-3">
         <label for="email" class="form-label">E-mail</label>
-        <input type="email" id="email" name="email" class="form-control" />
+        <input type="email" id="email" name="email" class="form-control" placeholder="exemplo@dominio.com" />
       </div>
 
       <div class="mb-3">
         <label for="cep" class="form-label">CEP *</label>
-        <input type="text" id="cep" name="cep" class="form-control" required />
+        <input type="text" id="cep" name="cep" class="form-control" placeholder="00000-000" required />
       </div>
 
       <div class="mb-3">
@@ -140,7 +132,7 @@
       <div class="mb-3">
         <label for="bem" class="form-label">Bem Desejado *</label>
         <select id="bem" name="bem" class="form-select" required>
-          <option disabled selected>Selecione</option>
+          <option value="" selected disabled>Selecione</option>
           <option value="Automóvel">Automóvel</option>
           <option value="Imóvel">Imóvel</option>
         </select>
@@ -148,7 +140,7 @@
 
       <div class="mb-3">
         <label for="valor" class="form-label">Valor do Bem (R$) *</label>
-        <input type="text" id="valor" name="valor" class="form-control" required />
+        <input type="text" id="valor" name="valor" class="form-control" placeholder="Ex: 65000,00" required />
       </div>
 
       <div class="mb-3">
@@ -157,8 +149,9 @@
       </div>
 
       <div class="mb-3">
-        <label for="status" class="form-label">Status do Lead</label>
-        <select id="status" name="status" class="form-select">
+        <label for="status" class="form-label">Status do Lead *</label>
+        <select id="status" name="status" class="form-select" required>
+          <option value="" selected disabled>Selecione</option>
           <option value="Novo">Novo</option>
           <option value="Atendimento">Atendimento</option>
           <option value="Ganho">Ganho</option>
@@ -168,16 +161,16 @@
       </div>
 
       <div class="mb-3">
-        <label for="origem" class="form-label">Origem do Lead</label>
-        <select id="origem" name="origem" class="form-select">
+        <label for="origem" class="form-label">Origem do Lead *</label>
+        <select id="origem" name="origem" class="form-select" required>
+          <option value="" selected disabled>Selecione</option>
           <option value="Instagram">Instagram</option>
           <option value="Facebook">Facebook</option>
-          <option value="Indicação">Indicação</option>
           <option value="Outros">Outros</option>
         </select>
       </div>
 
-      <div class="d-flex justify-content-between">
+      <div class="d-flex justify-content-between align-items-center">
         <button type="submit" class="btn btn-primary">Salvar Lead</button>
         <a href="/leads" class="btn btn-outline-warning">Visualizar Leads</a>
       </div>
@@ -185,6 +178,7 @@
   </div>
 
   <script>
+    // Cálculo automático parcela
     const bemField = document.getElementById('bem');
     const valorField = document.getElementById('valor');
     const parcelaField = document.getElementById('parcela');
@@ -204,21 +198,60 @@
       }
       parcelaField.value = parcela ? parcela.toFixed(2) : '';
     }
-
     bemField.addEventListener('change', calculaParcela);
     valorField.addEventListener('input', calculaParcela);
 
-    // Busca CEP com ViaCEP
-    document.getElementById('cep').addEventListener('blur', () => {
-      const cep = document.getElementById('cep').value.replace(/\D/g, '');
+    // Máscara CPF/CNPJ simplificada
+    const tipoDocField = document.getElementById('tipo_doc');
+    const documentoField = document.getElementById('documento');
+
+    function mascaraDocumento() {
+      let val = documentoField.value.replace(/\D/g, '');
+      if (tipoDocField.value === 'CPF') {
+        if (val.length > 11) val = val.slice(0, 11);
+        val = val.replace(/(\d{3})(\d)/, '$1.$2');
+        val = val.replace(/(\d{3})(\d)/, '$1.$2');
+        val = val.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+      } else {
+        // CNPJ
+        if (val.length > 14) val = val.slice(0, 14);
+        val = val.replace(/^(\d{2})(\d)/, '$1.$2');
+        val = val.replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3');
+        val = val.replace(/\.(\d{3})(\d)/, '.$1/$2');
+        val = val.replace(/(\d{4})(\d)/, '$1-$2');
+      }
+      documentoField.value = val;
+    }
+
+    documentoField.addEventListener('input', mascaraDocumento);
+
+    // Atualiza placeholder de documento conforme tipo
+    tipoDocField.addEventListener('change', () => {
+      if (tipoDocField.value === 'CPF') {
+        documentoField.placeholder = "000.000.000-00";
+      } else {
+        documentoField.placeholder = "00.000.000/0000-00";
+      }
+      documentoField.value = '';
+    });
+
+    // Busca CEP via API para preencher rua, bairro, cidade
+    const cepField = document.getElementById('cep');
+    cepField.addEventListener('blur', () => {
+      let cep = cepField.value.replace(/\D/g, '');
       if (cep.length !== 8) return;
+
       fetch(`https://viacep.com.br/ws/${cep}/json/`)
-        .then(resp => resp.json())
+        .then(response => response.json())
         .then(data => {
           if (!data.erro) {
             document.getElementById('rua').value = data.logradouro || '';
             document.getElementById('bairro').value = data.bairro || '';
             document.getElementById('cidade').value = data.localidade || '';
+          } else {
+            document.getElementById('rua').value = '';
+            document.getElementById('bairro').value = '';
+            document.getElementById('cidade').value = '';
           }
         });
     });

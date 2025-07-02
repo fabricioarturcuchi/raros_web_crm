@@ -5,7 +5,6 @@ import openpyxl
 app = Flask(__name__)
 app.secret_key = "segredo"
 
-# Função para salvar no Excel
 def salvar_lead_excel(dados):
     arquivo = "leads.xlsx"
     if not os.path.exists(arquivo):
@@ -24,7 +23,6 @@ def salvar_lead_excel(dados):
     ws.append(dados)
     wb.save(arquivo)
 
-# Página principal com formulário
 @app.route("/", methods=["GET", "POST"])
 def index():
     if request.method == "POST":
@@ -45,12 +43,12 @@ def index():
             status = request.form.get("status")
             origem = request.form.get("origem")
 
-            # Validações
+            # Validações simples
             if not nome_razao or not tipo_doc or not documento or not telefone or not cep or not bem or valor <= 0:
                 flash("Preencha todos os campos obrigatórios corretamente.", "danger")
                 return redirect("/")
 
-            # Cálculo da parcela
+            # Cálculo parcela
             if bem == "Automóvel":
                 if valor < 65000:
                     flash("Valor mínimo para Automóvel é R$ 65.000,00", "danger")
@@ -64,7 +62,6 @@ def index():
             else:
                 parcela = 0
 
-            # Salvar no Excel
             salvar_lead_excel([
                 nome_razao, tipo_doc, documento, telefone, email, cep, rua,
                 numero, bairro, cidade, bem, valor, parcela, status, origem
@@ -77,19 +74,30 @@ def index():
             return redirect("/")
     return render_template("index.html")
 
-# Rota para exibir leads
+
 @app.route("/leads")
 def visualizar_leads():
     leads = []
     arquivo = "leads.xlsx"
-    if os.path.exists(arquivo):
+
+    if not os.path.exists(arquivo):
+        flash("Nenhum lead cadastrado ainda. Cadastre um para visualizar.", "warning")
+        return redirect("/")
+
+    try:
         wb = openpyxl.load_workbook(arquivo)
+        if "Leads" not in wb.sheetnames:
+            flash("A aba 'Leads' não encontrada no Excel.", "danger")
+            return redirect("/")
         ws = wb["Leads"]
         for row in ws.iter_rows(min_row=2, values_only=True):
             leads.append(row)
-    return render_template("leads.html", leads=leads)
+        return render_template("leads.html", leads=leads)
+    except Exception as e:
+        flash(f"Erro ao carregar os leads: {e}", "danger")
+        return redirect("/")
 
-# Rodar app local ou na Render
+
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)

@@ -1,234 +1,139 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-  <meta charset="UTF-8" />
-  <title>RAROS CAPITAL - Cadastro de Leads</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+  <meta charset="UTF-8">
+  <title>Cadastro de Leads - RAROS CAPITAL</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
     body {
-      background-color: #0d0d0d;
+      background-color: #0a0a0a;
       color: white;
     }
-    .container {
-      max-width: 900px;
-      margin-top: 30px;
-      padding: 20px;
-      background: linear-gradient(145deg, #000000, #1a1a1a);
-      border-radius: 10px;
-      box-shadow: 0 0 10px gold;
-    }
-    label {
-      font-weight: 600;
-    }
-    .form-control, select {
-      background-color: #121212;
+    .form-control, .form-select {
+      background-color: #1e1e1e;
       color: white;
-      border: 1px solid gold;
-    }
-    .form-control::placeholder {
-      color: #ccc;
     }
     .btn-primary {
-      background-color: gold;
+      background-color: #007bff;
       border: none;
-      color: black;
-      font-weight: 700;
     }
-    .btn-primary:hover {
-      background-color: #b38f00;
-      color: white;
-    }
-    header {
-      text-align: center;
-      margin-bottom: 20px;
-    }
-    header img {
-      max-height: 60px;
-      margin-bottom: 10px;
-    }
-    footer {
-      text-align: center;
-      margin-top: 30px;
-      font-style: italic;
-      color: #aaa;
-    }
-    .flash-message {
-      margin-bottom: 15px;
+    .logo {
+      height: 60px;
     }
   </style>
 </head>
-<body>
-  <div class="container">
-    <header>
-      <img src="https://i.postimg.cc/wMPWky1K/Sem-t-tulo-removebg-preview.png" alt="RAROS CAPITAL Logo" />
-      <h1>RAROS CAPITAL</h1>
-      <p><em>"Transformando oportunidades em vendas de sucesso!"</em></p>
-    </header>
+<body class="container py-5">
 
-    {% with messages = get_flashed_messages(with_categories=true) %}
-      {% if messages %}
-        {% for category, message in messages %}
-          <div class="alert alert-{{ category }} flash-message" role="alert">{{ message }}</div>
-        {% endfor %}
-      {% endif %}
-    {% endwith %}
-
-    <form method="POST" novalidate>
-      <div class="mb-3">
-        <label for="nome_razao" class="form-label">Nome ou Razão Social *</label>
-        <input type="text" id="nome_razao" name="nome_razao" class="form-control" required />
-      </div>
-
-      <div class="mb-3">
-        <label for="tipo_doc" class="form-label">Tipo Documento *</label>
-        <select id="tipo_doc" name="tipo_doc" class="form-select" required>
-          <option value="CPF" selected>CPF</option>
-          <option value="CNPJ">CNPJ</option>
-        </select>
-      </div>
-
-      <div class="mb-3">
-        <label for="documento" class="form-label">CPF ou CNPJ *</label>
-        <input type="text" id="documento" name="documento" class="form-control" placeholder="000.000.000-00" required />
-      </div>
-
-      <div class="mb-3">
-        <label for="telefone" class="form-label">Telefone (WhatsApp) *</label>
-        <input type="text" id="telefone" name="telefone" class="form-control" placeholder="(00) 00000-0000" required />
-      </div>
-
-      <div class="mb-3">
-        <label for="email" class="form-label">E-mail</label>
-        <input type="email" id="email" name="email" class="form-control" placeholder="exemplo@dominio.com" />
-      </div>
-
-      <div class="mb-3">
-        <label for="cep" class="form-label">CEP *</label>
-        <input type="text" id="cep" name="cep" class="form-control" placeholder="00000-000" required />
-      </div>
-
-      <div class="mb-3">
-        <label for="rua" class="form-label">Rua</label>
-        <input type="text" id="rua" name="rua" class="form-control" readonly />
-      </div>
-
-      <div class="mb-3">
-        <label for="numero" class="form-label">Número</label>
-        <input type="text" id="numero" name="numero" class="form-control" />
-      </div>
-
-      <div class="mb-3">
-        <label for="bairro" class="form-label">Bairro</label>
-        <input type="text" id="bairro" name="bairro" class="form-control" readonly />
-      </div>
-
-      <div class="mb-3">
-        <label for="cidade" class="form-label">Cidade</label>
-        <input type="text" id="cidade" name="cidade" class="form-control" readonly />
-      </div>
-
-      <div class="mb-3">
-        <label for="bem" class="form-label">Bem Desejado *</label>
-        <select id="bem" name="bem" class="form-select" required>
-          <option value="" selected disabled>Selecione</option>
-          <option value="Automóvel">Automóvel</option>
-          <option value="Imóvel">Imóvel</option>
-        </select>
-      </div>
-
-      <div class="mb-3">
-        <label for="valor" class="form-label">Valor do Bem (R$) *</label>
-        <input type="text" id="valor" name="valor" class="form-control" placeholder="Ex: 65000,00" required />
-      </div>
-
-      <div class="mb-3">
-        <label for="parcela" class="form-label">Parcela Calculada (R$)</label>
-        <input type="text" id="parcela" name="parcela" class="form-control" readonly />
-      </div>
-
-      <div class="mb-3">
-        <label for="status" class="form-label">Status do Lead</label>
-        <input type="text" id="status" name="status" class="form-control" />
-      </div>
-
-      <div class="mb-3">
-        <label for="origem" class="form-label">Origem do Lead</label>
-        <input type="text" id="origem" name="origem" class="form-control" />
-      </div>
-
-      <div class="d-flex justify-content-between align-items-center">
-        <button type="submit" class="btn btn-primary">Salvar Lead</button>
-        <a href="/leads" class="btn btn-outline-warning">Visualizar Leads</a>
-      </div>
-    </form>
+  <div class="text-center mb-4">
+    <img src="https://i.postimg.cc/wMPWky1K/Sem-t-tulo-removebg-preview.png" class="logo" alt="Logo">
+    <h1>RAROS CAPITAL</h1>
+    <p class="text-warning">"Vender é transformar sonhos em conquistas reais."</p>
   </div>
 
-  <script>
-    // Cálculo automático parcela
-    const bemField = document.getElementById('bem');
-    const valorField = document.getElementById('valor');
-    const parcelaField = document.getElementById('parcela');
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div class="alert alert-{{ category }}">{{ message }}</div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
 
-    function calculaParcela() {
-      let valor = parseFloat(valorField.value.replace(",", "."));
-      if (isNaN(valor)) {
-        parcelaField.value = '';
-        return;
-      }
-      let bem = bemField.value;
-      let parcela = 0;
-      if (bem === 'Automóvel' && valor >= 65000) {
-        parcela = (valor * 1.16) / 84;
-      } else if (bem === 'Imóvel' && valor >= 200000) {
-        parcela = (valor * 1.22) / 220;
-      }
-      parcelaField.value = parcela ? parcela.toFixed(2) : '';
-    }
-    bemField.addEventListener('change', calculaParcela);
-    valorField.addEventListener('input', calculaParcela);
+  <form method="POST" class="row g-3">
 
-    // Máscara CPF/CNPJ simplificada
-    const tipoDocField = document.getElementById('tipo_doc');
-    const documentoField = document.getElementById('documento');
+    <div class="col-md-6">
+      <label>Nome ou Razão Social</label>
+      <input type="text" name="nome_razao" class="form-control" required>
+    </div>
 
-    function mascaraDocumento() {
-      let val = documentoField.value.replace(/\D/g, '');
-      if (tipoDocField.value === 'CPF') {
-        if (val.length > 11) val = val.slice(0, 11);
-        val = val.replace(/(\d{3})(\d)/, '$1.$2');
-        val = val.replace(/(\d{3})(\d)/, '$1.$2');
-        val = val.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
-      } else {
-        // CNPJ
-        if (val.length > 14) val = val.slice(0, 14);
-        val = val.replace(/^(\d{2})(\d)/, '$1.$2');
-        val = val.replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3');
-        val = val.replace(/\.(\d{3})(\d)/, '.$1/$2');
-        val = val.replace(/(\d{4})(\d)/, '$1-$2');
-      }
-      documentoField.value = val;
-    }
+    <div class="col-md-3">
+      <label>Tipo Documento</label>
+      <select name="tipo_doc" class="form-select" required>
+        <option value="">Selecione</option>
+        <option value="CPF">CPF</option>
+        <option value="CNPJ">CNPJ</option>
+      </select>
+    </div>
 
-    documentoField.addEventListener('input', mascaraDocumento);
+    <div class="col-md-3">
+      <label>Documento</label>
+      <input type="text" name="documento" class="form-control" required>
+    </div>
 
-    // Busca CEP via API para preencher rua, bairro, cidade
-    const cepField = document.getElementById('cep');
-    cepField.addEventListener('blur', () => {
-      let cep = cepField.value.replace(/\D/g, '');
-      if (cep.length !== 8) return;
+    <div class="col-md-4">
+      <label>Telefone (WhatsApp)</label>
+      <input type="text" name="telefone" class="form-control" required>
+    </div>
 
-      fetch(`https://viacep.com.br/ws/${cep}/json/`)
-        .then(response => response.json())
-        .then(data => {
-          if (!data.erro) {
-            document.getElementById('rua').value = data.logradouro || '';
-            document.getElementById('bairro').value = data.bairro || '';
-            document.getElementById('cidade').value = data.localidade || '';
-          }
-        });
-    });
-  </script>
+    <div class="col-md-4">
+      <label>E-mail</label>
+      <input type="email" name="email" class="form-control">
+    </div>
+
+    <div class="col-md-4">
+      <label>CEP</label>
+      <input type="text" name="cep" class="form-control" required>
+    </div>
+
+    <div class="col-md-3">
+      <label>Rua</label>
+      <input type="text" name="rua" class="form-control">
+    </div>
+    <div class="col-md-2">
+      <label>Número</label>
+      <input type="text" name="numero" class="form-control">
+    </div>
+    <div class="col-md-3">
+      <label>Bairro</label>
+      <input type="text" name="bairro" class="form-control">
+    </div>
+    <div class="col-md-4">
+      <label>Cidade</label>
+      <input type="text" name="cidade" class="form-control">
+    </div>
+
+    <div class="col-md-3">
+      <label>Bem Desejado</label>
+      <select name="bem" class="form-select" required>
+        <option value="">Selecione</option>
+        <option value="Automóvel">Automóvel</option>
+        <option value="Imóvel">Imóvel</option>
+      </select>
+    </div>
+
+    <div class="col-md-3">
+      <label>Valor do Bem</label>
+      <input type="text" name="valor" class="form-control" required>
+    </div>
+
+    <div class="col-md-3">
+      <label>Status do Lead</label>
+      <select name="status" class="form-select" required>
+        <option value="">Selecione</option>
+        <option value="Novo">Novo</option>
+        <option value="Atendimento">Atendimento</option>
+        <option value="Ganho">Ganho</option>
+        <option value="Perdido">Perdido</option>
+        <option value="Outros">Outros</option>
+      </select>
+    </div>
+
+    <div class="col-md-3">
+      <label>Origem do Lead</label>
+      <select name="origem" class="form-select" required>
+        <option value="">Selecione</option>
+        <option value="Instagram">Instagram</option>
+        <option value="Facebook">Facebook</option>
+        <option value="Google Ads">Google Ads</option>
+        <option value="Indicação">Indicação</option>
+        <option value="Site">Site</option>
+        <option value="Outros">Outros</option>
+      </select>
+    </div>
+
+    <div class="col-12 text-end">
+      <button type="submit" class="btn btn-primary">💾 Salvar Lead</button>
+      <a href="/leads" class="btn btn-secondary">📋 Ver Leads</a>
+    </div>
+  </form>
 </body>
 </html>
